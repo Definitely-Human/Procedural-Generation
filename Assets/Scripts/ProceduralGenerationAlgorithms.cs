@@ -105,19 +105,3 @@ public static class ProceduralGenerationAlgorithms
         roomQueue.Enqueue(room2);
     }
 }
-
-public static class Direction2D
-{
-    public static List<Vector2Int> CardinalDirections = new ()
-    {
-        Vector2Int.up,
-        Vector2Int.left,
-        Vector2Int.down,
-        Vector2Int.right,
-    };
-
-    public static Vector2Int GetRandomCardinalDirection()
-    {
-        return CardinalDirections[Random.Range(0, CardinalDirections.Count)];
-    }
-}
