@@ -4,15 +4,15 @@ using UnityEngine;
 
 public static class WallGenerator
 {
-    public static void CreateWalls(HashSet<Vector2Int> floorPositions, TilemapVisualizer tilemapVisualizer)
+    public static void CreateWalls(HashSet<Vector2Int> floorPositions, DungeonVisualizer dungeonVisualizer)
     {
         var basicWallPositions = FindWallDirections(floorPositions, Direction2D.CardinalDirections);
         var cornerWallPositions = FindWallDirections(floorPositions, Direction2D.DiagonalDirections);
-        CreateBasicWalls(tilemapVisualizer, basicWallPositions, floorPositions);
-        CreateCornerWalls(tilemapVisualizer, cornerWallPositions, floorPositions);
+        CreateBasicWalls(dungeonVisualizer, basicWallPositions, floorPositions);
+        CreateCornerWalls(dungeonVisualizer, cornerWallPositions, floorPositions);
     }
 
-    private static void CreateCornerWalls(TilemapVisualizer tilemapVisualizer, HashSet<Vector2Int> cornerWallPositions, HashSet<Vector2Int> floorPositions)
+    private static void CreateCornerWalls(DungeonVisualizer dungeonVisualizer, HashSet<Vector2Int> cornerWallPositions, HashSet<Vector2Int> floorPositions)
     {
         foreach (var position in cornerWallPositions)
         {
@@ -22,11 +22,11 @@ public static class WallGenerator
                 var neighbourPosition = position + direction;
                 neighboursBinaryType += floorPositions.Contains(neighbourPosition) ? "1" : "0";
             }
-            tilemapVisualizer.PaintSingleCornerWall(position,neighboursBinaryType);
+            dungeonVisualizer.PaintSingleCornerWall(position,neighboursBinaryType);
         }
     }
 
-    private static void CreateBasicWalls(TilemapVisualizer tilemapVisualizer, 
+    private static void CreateBasicWalls(DungeonVisualizer dungeonVisualizer, 
         HashSet<Vector2Int> basicWallPositions,HashSet<Vector2Int> floorPositions )
     {
         foreach (var position in basicWallPositions)
@@ -37,7 +37,7 @@ public static class WallGenerator
                 var neighbourPosition = position + direction;
                 neighboursBinaryType += floorPositions.Contains(neighbourPosition) ? "1" : "0";
             }
-            tilemapVisualizer.PaintSingleBasicWall(position, neighboursBinaryType);
+            dungeonVisualizer.PaintSingleBasicWall(position, neighboursBinaryType);
         }
     }
 

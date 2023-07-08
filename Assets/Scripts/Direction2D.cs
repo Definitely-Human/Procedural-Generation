@@ -30,6 +30,19 @@ public static class Direction2D
         Vector2Int.left,
         new Vector2Int(-1,1), // Up-Left
     };
+    
+    public static Vector2Int GetDirection90DegFrom(Vector2Int direction)
+    {
+        if(direction == Vector2Int.up)
+            return Vector2Int.right;
+        if (direction == Vector2Int.right) 
+            return Vector2Int.down;
+        if(direction == Vector2Int.down)
+            return Vector2Int.left;
+        if(direction == Vector2Int.left)
+            return Vector2Int.up;
+        return Vector2Int.zero; // Possibly throw index out of range exception.
+    }
 
     public static Vector2Int GetRandomCardinalDirection()
     {

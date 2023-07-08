@@ -42,52 +42,13 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         }
             
 
-        tilemapVisualizer.PaintFloorTiles(floorPositions);
-        WallGenerator.CreateWalls(floorPositions, tilemapVisualizer);
+        dungeonVisualizer.PaintFloorTiles(floorPositions);
+        WallGenerator.CreateWalls(floorPositions, dungeonVisualizer);
     }
 
-    private List<Vector2Int> IncreaseCorridorSizeByOne(List<Vector2Int> corridor)
-    {
-        List<Vector2Int> newCorridor = new List<Vector2Int>();
-        Vector2Int previewDirection = Vector2Int.zero;
-        for (int i = 1; i < corridor.Count; i++)
-        {
-            Vector2Int directionFromCell = corridor[i] - corridor[i - 1];
-            if (previewDirection != Vector2Int.zero &&
-                directionFromCell != previewDirection)
-            {//handle corners
-                for (int x = -1; x < 2; x++)
-                {
-                    for (int y = -1; y < 2; y++)
-                    {
-                        newCorridor.Add(corridor[i - 1] + new Vector2Int(x, y));
-                    }
-                }
-                previewDirection = directionFromCell;
-            }
-            else
-            {
-                Vector2Int newCorridorTileOffset = GetDirection90DegFrom(directionFromCell);
-                newCorridor.Add(corridor[i-1]);
-                newCorridor.Add(corridor[i-1] + newCorridorTileOffset);
-            }
-        }
+    
 
-        return newCorridor;
-    }
-
-    private Vector2Int GetDirection90DegFrom(Vector2Int direction)
-    {
-        if(direction == Vector2Int.up)
-            return Vector2Int.right;
-        if (direction == Vector2Int.right) 
-            return Vector2Int.down;
-        if(direction == Vector2Int.down)
-            return Vector2Int.left;
-        if(direction == Vector2Int.left)
-            return Vector2Int.up;
-        return Vector2Int.zero; // Possibly throw index out of range exception.
-    }
+    
 
     private void CreateRoomsAtDeadEnds(List<Vector2Int> deadEnds, HashSet<Vector2Int> roomFloors)
     {
