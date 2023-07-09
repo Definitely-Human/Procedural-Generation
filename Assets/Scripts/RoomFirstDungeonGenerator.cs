@@ -5,8 +5,10 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
+public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
 {
+    [SerializeField] protected SimpleRandomWalkSO randomWalkParams;
+    
     [SerializeField]
     private int minRoomWidth = 4;
     [SerializeField]
@@ -50,9 +52,9 @@ public class RoomFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         corridors = new HashSet<Vector2Int>(IncreaseCorridorSizeByOne(corridors.ToList()));
         floor.UnionWith(corridors);
 
-        bool[,] floorMatrix = ProceduralGenerationAlgorithms.ConvertVectorListToBoolArray(floor.ToList(),dungeonWidht,dungeonHeight);
+        bool[,] floorMatrix = ConvertVectorListToBoolArray(floor.ToList(),dungeonWidht,dungeonHeight);
         ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix,cellularAutomataIterations);
-        floor = new HashSet<Vector2Int>(ProceduralGenerationAlgorithms.ConvertBoolArrayToVectorList(floorMatrix));
+        floor = new HashSet<Vector2Int>(ConvertBoolArrayToVectorList(floorMatrix));
         
         dungeonVisualizer.PaintFloorTiles(floor);
         WallGenerator.CreateWalls(floor, dungeonVisualizer);

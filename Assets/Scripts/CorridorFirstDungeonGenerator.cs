@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
+public class CorridorFirstDungeonGenerator : AbstractDungeonGenerator
 {
     [SerializeField]
     private int corridorLength = 14;
     [SerializeField]
     private int corridorCount = 5;
+    
+    [SerializeField] protected SimpleRandomWalkSO randomWalkParams;
 
     [SerializeField,Range(0.05f,1f)]
     private float roomPercent;

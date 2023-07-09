@@ -6,11 +6,15 @@ using UnityEngine.Serialization;
 
 public abstract class AbstractDungeonGenerator : MonoBehaviour
 {
-    [FormerlySerializedAs("tilemapVisualizer")] [SerializeField] protected DungeonVisualizer dungeonVisualizer = null;
+    [SerializeField] protected DungeonVisualizer dungeonVisualizer;
     [SerializeField] protected Vector2Int startPosition = Vector2Int.zero;
+    [SerializeField] protected bool isSetSeed;
+    [SerializeField, ConditionalHide("isSetSeed")] protected int seed = 42;
 
     public void GenerateDungeon()
     {
+        if(isSetSeed)
+            Random.InitState(seed);
         dungeonVisualizer.Clear();
         RunProceduralGeneration();
     }
@@ -62,6 +66,52 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
         }
 
         return newCorridor;
+    }
+    
+    public static List<Vector2Int> ConvertBoolArrayToVectorList(bool[,] tileMap)
+    {
+        // for (int i = tileMap.GetLength(0) - 1; i >= 0; i--)
+        // {
+        //     string row = "";
+        //     for (int j = 0; j < tileMap.GetLength(1); j++)
+        //     {
+        //         row += tileMap[i,j]?"1":"0";
+        //     }
+        //     Debug.Log(row);
+        // }
+        List<Vector2Int> tileList = new List<Vector2Int>();
+        for (int i = 0; i < tileMap.GetLength(0); i++)
+        {
+            for (int j = 0; j < tileMap.GetLength(1); j++)
+            {
+                if (tileMap[i, j])
+                {
+                    // Debug.Log(i + " " + j);
+                    tileList.Add(new Vector2Int(i, j));
+                }
+            }
+        }
+
+        return tileList;
+    }
+    
+    public static bool[,] ConvertVectorListToBoolArray(List<Vector2Int> tileList, int x, int y)
+    {
+        bool[,] tilemap = new bool[y,x];
+        
+        for (int i = 0; i < y; i++)
+        {
+            for (int j = 0; j < x; j++)
+            {
+                tilemap[i, j] = false;  
+            }
+        }
+        foreach (var tile in tileList)
+        {
+            tilemap[ tile.y, tile.x] = true;
+        }
+        
+        return tilemap;
     }
     
 }
