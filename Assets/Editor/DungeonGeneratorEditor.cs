@@ -7,7 +7,7 @@ using UnityEngine;
 [CustomEditor(typeof(AbstractDungeonGenerator), true)]
 public class DungeonGeneratorEditor: Editor
 {
-    private AbstractDungeonGenerator generator;
+    protected AbstractDungeonGenerator generator;
 
     private void Awake()
     {

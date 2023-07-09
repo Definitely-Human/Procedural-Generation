@@ -87,10 +87,10 @@ public static class ProceduralGenerationAlgorithms
         return (x >= 0 && y >= 0) && (x < originalGrid.GetLength(1) && y < originalGrid.GetLength(0));
     }
 
-    public static List<BoundsInt> BinarySpacePartitioning(BoundsInt spaceToSplit, int minWidth, int minHeight)
+    public static List<RectInt> BinarySpacePartitioning(RectInt spaceToSplit, int minWidth, int minHeight)
     {
-        Queue<BoundsInt> roomQueue = new Queue<BoundsInt>();
-        List<BoundsInt> roomsList = new List<BoundsInt>();
+        Queue<RectInt> roomQueue = new Queue<RectInt>();
+        List<RectInt> roomsList = new List<RectInt>();
         roomQueue.Enqueue(spaceToSplit);
         while (roomQueue.Count > 0)
         {
@@ -136,22 +136,22 @@ public static class ProceduralGenerationAlgorithms
         return roomsList;
     }
 
-    private static void SplitVertically(int minWidth, Queue<BoundsInt> roomQueue, BoundsInt room)
+    private static void SplitVertically(int minWidth, Queue<RectInt> roomQueue, RectInt room)
     {
         int xSplit = Random.Range(1, room.size.x);
-        BoundsInt room1 = new BoundsInt(room.min, new Vector3Int(xSplit, room.size.y,room.size.z));
-        BoundsInt room2 = new BoundsInt(new Vector3Int(room.min.x + xSplit, room.min.y, room.min.z),
-            new Vector3Int(room.size.x-xSplit,room.size.y,room.size.z));
+        RectInt room1 = new RectInt(room.min, new Vector2Int(xSplit, room.size.y));
+        RectInt room2 = new RectInt(new Vector2Int(room.min.x + xSplit, room.min.y),
+            new Vector2Int(room.size.x-xSplit,room.size.y));
         roomQueue.Enqueue(room1);
         roomQueue.Enqueue(room2);
     }
 
-    private static void SplitHorizontally(int minHeight, Queue<BoundsInt> roomQueue, BoundsInt room)
+    private static void SplitHorizontally(int minHeight, Queue<RectInt> roomQueue, RectInt room)
     {
         int ySplit = Random.Range(1, room.size.y);
-        BoundsInt room1 = new BoundsInt(room.min, new Vector3Int(room.size.x, ySplit, room.size.z));
-        BoundsInt room2 = new BoundsInt(new Vector3Int(room.min.x, room.min.y + ySplit, room.min.z),
-            new Vector3Int(room.size.x,room.size.y-ySplit,room.size.z));
+        RectInt room1 = new RectInt(room.min, new Vector2Int(room.size.x, ySplit));
+        RectInt room2 = new RectInt(new Vector2Int(room.min.x, room.min.y + ySplit),
+            new Vector2Int(room.size.x,room.size.y-ySplit));
         roomQueue.Enqueue(room1);
         roomQueue.Enqueue(room2);
     }

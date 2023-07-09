@@ -3,28 +3,37 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
 {
+    [Header("Dungeon Parameters")]
+    [SerializeField] 
+    private int dungeonWidth = 100;
+    [SerializeField]
+    private int dungeonHeight = 100;
+    
+    [Header("Room Parameters")]
     [SerializeField] protected SimpleRandomWalkSO randomWalkParams;
     
     [SerializeField]
-    private int minRoomWidth = 4;
+    private int minRoomWidth = 10;
     [SerializeField]
-    private int minRoomHeight = 4;
-
-    [SerializeField] 
-    private int dungeonWidht = 20;
-    [SerializeField]
-    private int dungeonHeight = 20;
+    private int minRoomHeight = 10;
 
     [SerializeField, Range(0,10)]
     private int roomMargin = 1;
     [SerializeField]
     private bool randomWalkRooms = false;
-
-    [SerializeField, Range(0,25)] private int cellularAutomataIterations = 0;
+    
+    [Header("Smoothing Pass")]
+    [SerializeField, Range(0,25)] private int cellAutIterations = 0;
+    [SerializeField, Range(3,5)] private int celAutThreshold = 4;
+    
+    [Header("Debug")]
+    [SerializeField] private bool visualizeRoomBounds = false;
+    [SerializeField] private RoomBoundsVisualizer roomBoundsVisualizer;
 
     protected override void RunProceduralGeneration()
     {
@@ -33,10 +42,12 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
 
     private void CreateRooms()
     {
-        var roomList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(new BoundsInt((Vector3Int)startPosition,
-            new Vector3Int(dungeonWidht,dungeonHeight,0)),minRoomWidth,minRoomHeight);
+        List<RectInt> roomList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(new RectInt(startPosition,
+            new Vector2Int(dungeonWidth,dungeonHeight)),minRoomWidth,minRoomHeight);
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
 
+        
+        
         if (randomWalkRooms)
         {
             floor = CreateRandomWalkRooms(roomList);
@@ -46,32 +57,49 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
             floor = CreateSimpleRooms(roomList);
         }
 
-        var roomCenters = FindRoomCenters(roomList);
+        CreateCorridors(roomList, floor);
+
+        floor = SmoothPass(floor);
+
+        dungeonVisualizer.PaintFloorTiles(floor);
+        WallGenerator.CreateWalls(floor, dungeonVisualizer);
+        
+        
+        roomBoundsVisualizer.Clear();
+        if (visualizeRoomBounds)
+        {
+            roomBoundsVisualizer.VisualizeRoomBounds(roomList);
+        }
+    }
+
+    private void CreateCorridors(List<RectInt> roomList, HashSet<Vector2Int> floor)
+    {
+        List<Vector2Int> roomCenters = FindRoomCenters(roomList);
 
         HashSet<Vector2Int> corridors = ConnectRooms(roomCenters);
         corridors = new HashSet<Vector2Int>(IncreaseCorridorSizeByOne(corridors.ToList()));
         floor.UnionWith(corridors);
-
-        bool[,] floorMatrix = ConvertVectorListToBoolArray(floor.ToList(),dungeonWidht,dungeonHeight);
-        ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix,cellularAutomataIterations);
-        floor = new HashSet<Vector2Int>(ConvertBoolArrayToVectorList(floorMatrix));
-        
-        dungeonVisualizer.PaintFloorTiles(floor);
-        WallGenerator.CreateWalls(floor, dungeonVisualizer);
     }
 
-    private static List<Vector2Int> FindRoomCenters(List<BoundsInt> roomList)
+    private HashSet<Vector2Int> SmoothPass(HashSet<Vector2Int> floor)
+    {
+        bool[,] floorMatrix = ConvertVectorListToBoolArray(floor.ToList(), dungeonWidth, dungeonHeight);
+        ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix, cellAutIterations, celAutThreshold);
+        return new HashSet<Vector2Int>(ConvertBoolArrayToVectorList(floorMatrix));
+    }
+
+    private static List<Vector2Int> FindRoomCenters(List<RectInt> roomList)
     {
         List<Vector2Int> roomCenters = new List<Vector2Int>();
         foreach (var room in roomList)
         {
-            roomCenters.Add((Vector2Int)Vector3Int.RoundToInt(room.center));
+            roomCenters.Add(Vector2Int.RoundToInt(room.center));
         }
 
         return roomCenters;
     }
 
-    private HashSet<Vector2Int> CreateRandomWalkRooms(List<BoundsInt> roomList)
+    private HashSet<Vector2Int> CreateRandomWalkRooms(List<RectInt> roomList)
     {
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
         for (int i = 0; i<roomList.Count; i++)
@@ -155,7 +183,7 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
         return closest;
     }
 
-    private HashSet<Vector2Int> CreateSimpleRooms(List<BoundsInt> roomList)
+    private HashSet<Vector2Int> CreateSimpleRooms(List<RectInt> roomList)
     {
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
         foreach (var room in roomList)
