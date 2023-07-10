@@ -11,7 +11,7 @@ public class CorridorFirstDungeonGenerator : AbstractDungeonGenerator
     [SerializeField]
     private int corridorCount = 5;
     
-    [SerializeField] protected SimpleRandomWalkSO randomWalkParams;
+    [SerializeField] protected RoomParamsSO randomWalkParams;
 
     [SerializeField,Range(0.05f,1f)]
     private float roomPercent;

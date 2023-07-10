@@ -21,13 +21,13 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
 
     protected abstract void RunProceduralGeneration();
     
-    public static HashSet<Vector2Int> RunRandomWalk(SimpleRandomWalkSO parameters, Vector2Int position)
+    public static HashSet<Vector2Int> RunRandomWalk(RoomParamsSO parameters, Vector2Int position)
     {
         var currentPosition = position;
         HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
-        for (int i = 0; i < parameters.Iterations; i++)
+        for (int i = 0; i < parameters.RWalkIterations; i++)
         {
-            var path = ProceduralGenerationAlgorithms.SimpleRandomWalk(currentPosition, parameters.WalkLength);
+            var path = ProceduralGenerationAlgorithms.SimpleRandomWalk(currentPosition, parameters.RWalkLength);
             floorPositions.UnionWith(path);
             if (parameters.StartRandomlyEachIteration)
             {

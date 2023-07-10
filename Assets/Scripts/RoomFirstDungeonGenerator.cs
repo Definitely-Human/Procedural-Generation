@@ -13,9 +13,15 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
     private int dungeonWidth = 100;
     [SerializeField]
     private int dungeonHeight = 100;
-    
-    [Header("Room Parameters")]
-    [SerializeField] protected SimpleRandomWalkSO randomWalkParams;
+
+    [Header("Room Parameters")] 
+    [SerializeField]
+    private bool differentSizedRooms;
+
+    [SerializeField] private List<RoomParamsSO> roomParams;
+
+    [Space, Space]
+    [SerializeField] protected RoomParamsSO randomWalkParams;
     
     [SerializeField]
     private int minRoomWidth = 10;
@@ -42,12 +48,20 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
 
     private void CreateRooms()
     {
-        List<RectInt> roomList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(new RectInt(startPosition,
-            new Vector2Int(dungeonWidth,dungeonHeight)),minRoomWidth,minRoomHeight);
+        List<RectInt> roomList;
+        RectInt spaceToSplit = new RectInt(startPosition,
+            new Vector2Int(dungeonWidth,dungeonHeight));
+        if (differentSizedRooms)
+        {
+            roomList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(spaceToSplit,roomParams,roomMargin);
+        }
+        else
+        {
+            roomList = ProceduralGenerationAlgorithms.BinarySpacePartitioning(spaceToSplit,minRoomWidth,minRoomHeight);
+        }
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
 
-        
-        
+
         if (randomWalkRooms)
         {
             floor = CreateRandomWalkRooms(roomList);

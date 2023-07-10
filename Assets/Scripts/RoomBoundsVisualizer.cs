@@ -13,7 +13,7 @@ public class RoomBoundsVisualizer : MonoBehaviour
         foreach (RectInt roomBoundary in roomBounds)
         {
             Color color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 0.5f);
-            Debug.Log(roomBoundary.xMin + " " + roomBoundary.xMax + " " + roomBoundary.yMin + " " + roomBoundary.yMax);
+            //Debug.Log(roomBoundary.xMin + " " + roomBoundary.xMax + " " + roomBoundary.yMin + " " + roomBoundary.yMax);
             for (int i = roomBoundary.xMin; i < roomBoundary.xMax; i++)
             {
                 for (int j = roomBoundary.yMin; j < roomBoundary.yMax; j++)

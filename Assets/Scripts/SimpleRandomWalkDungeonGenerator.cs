@@ -6,7 +6,7 @@ using UnityEngine;
 public class SimpleRandomWalkDungeonGenerator : AbstractDungeonGenerator
 {
 
-    [SerializeField] protected SimpleRandomWalkSO randomWalkParams;
+    [SerializeField] protected RoomParamsSO randomWalkParams;
 
     
     

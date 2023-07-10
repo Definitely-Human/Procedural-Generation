@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -87,6 +88,72 @@ public static class ProceduralGenerationAlgorithms
         return (x >= 0 && y >= 0) && (x < originalGrid.GetLength(1) && y < originalGrid.GetLength(0));
     }
 
+    public static List<RectInt> BinarySpacePartitioning(RectInt spaceToSplit, List<RoomParamsSO> roomParams, int roomMargin)
+    {
+        roomMargin *= 2;
+        List<RoomParamsSO> roomsLeft = new List<RoomParamsSO>(roomParams);
+        Queue<RectInt> roomQueue = new Queue<RectInt>();
+        List<RectInt> roomsList = new List<RectInt>();
+        roomQueue.Enqueue(spaceToSplit);
+        while (roomQueue.Count > 0 && roomsLeft.Count > 0)
+        {
+            RectInt room = roomQueue.Dequeue();
+            bool roomAdded = false;
+            for (int i = 0; i < roomsLeft.Count; i++)
+            {
+                if (room.size.y >= roomsLeft[i].RoomMinHeight + roomMargin && room.size.x >= roomsLeft[i].RoomMinWidth + roomMargin &&
+                    room.size.y <= roomsLeft[i].RoomMaxHeight + roomMargin && room.size.x <= roomsLeft[i].RoomMaxWidth + roomMargin)
+                {
+                    roomsList.Add(room);
+                    roomsLeft.RemoveAt(i);
+                    roomAdded = true;
+                    break;
+                }
+            }
+
+            if (roomAdded) continue;
+            int minWidth = Int32.MaxValue, minHeight = Int32.MaxValue;
+            foreach (var roomParam in roomsLeft)
+            {
+                if (roomParam.RoomMinWidth < minWidth) minWidth = roomParam.RoomMinWidth;
+                if (roomParam.RoomMinHeight < minHeight) minHeight = roomParam.RoomMinHeight;
+            }
+
+            minWidth += roomMargin;
+            minHeight += roomMargin;
+
+            if (room.size.y >= minHeight && room.size.x >= minWidth)
+            {
+                if (Random.value < 0.5f)
+                {
+                    if (room.size.y >= minHeight * 2)
+                    {
+                        SplitHorizontally(minHeight, roomQueue, room);
+                    }
+                    else if (room.size.x >= minWidth * 2)
+                    {
+
+                        SplitVertically(minWidth, roomQueue, room);
+                    }
+                }
+                else
+                {
+                    if (room.size.x >= minWidth * 2)
+                    {
+
+                        SplitVertically(minWidth, roomQueue, room);
+                    }
+                    else if (room.size.y >= minHeight * 2)
+                    {
+                        SplitHorizontally(minHeight, roomQueue, room);
+                    }
+                }
+            }
+        }
+
+        return roomsList;
+    }
+
     public static List<RectInt> BinarySpacePartitioning(RectInt spaceToSplit, int minWidth, int minHeight)
     {
         Queue<RectInt> roomQueue = new Queue<RectInt>();
@@ -131,7 +198,6 @@ public static class ProceduralGenerationAlgorithms
                 }
             }
         }
-
 
         return roomsList;
     }
