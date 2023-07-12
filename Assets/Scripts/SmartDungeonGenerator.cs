@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using QuickGraph;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class SmartDungeonGenerator : AbstractDungeonGenerator
 {
@@ -16,11 +18,13 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
     [SerializeField] private List<RoomParamsSO> roomParams;
     [SerializeField, Range(0,10)]
     private int roomMargin = 1;
-
+    
+    [Range(3,10), SerializeField] private int minDungeonLenght;
+    [Range(4,10), SerializeField] private int maxDungeonLength;
 
     [Header("Smoothing Pass")] 
     [SerializeField] private bool smoothIndividualRooms;
-    [SerializeField] private bool applySmoothing;
+    [SerializeField] private bool applyDungeonSmoothing;
     [SerializeField, Range(0,25)] private int cellAutIterations = 0;
     [SerializeField, Range(3,5)] private int celAutThreshold = 4;
     
@@ -42,7 +46,7 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
         CalculateDungeonSize();
         
         
-        if(applySmoothing && cellAutIterations > 0)
+        if(applyDungeonSmoothing && cellAutIterations > 0)
             _dungeonFloorTiles = SmoothDungeon(_dungeonFloorTiles);
 
         
@@ -60,11 +64,6 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
             if(!roomA.IsConnected(roomB))
                 CreateCorridor(roomA,roomB);
         }
-
-        foreach (Corridor corridor in _corridors)
-        {
-            
-        }
     }
     
 
@@ -75,9 +74,9 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
         Vector2Int bestTileB = new Vector2Int();
         for (int i = 0; i < roomA.EdgeTiles.Count; i++)
         {
+            Vector2Int tileA = roomA.EdgeTiles[i] + roomA.Origin; 
             for (int j = 0; j < roomB.EdgeTiles.Count; j++)
             {
-                Vector2Int tileA = roomA.EdgeTiles[i] + roomA.Origin; // Possibly move to outer loop
                 Vector2Int tileB = roomB.EdgeTiles[j] + roomB.Origin;
                 int distanceBetweenRooms = (int)(Mathf.Pow(tileA.x - tileB.x, 2) + Mathf.Pow(tileA.y - tileB.y,2));
                 if (distanceBetweenRooms < bestDistance)
@@ -92,14 +91,17 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
 
         List<Vector2Int> corridorLine = GetLine(bestTileA, bestTileB);
         HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
-
+        
+        Vector2Int corridorOrigin = bestTileA;
+        
         foreach (Vector2Int tile in corridorLine)
         {
-            corridorTiles.UnionWith(DrawCircle(tile,corridorRadius));
+            corridorTiles.UnionWith(DrawCircle(tile - corridorOrigin,corridorRadius)); 
+            // Subtract corridor origin from tile to make position relative to origin.
         }
 
         Corridor corridor = new Corridor(roomA, roomB, corridorTiles);
-        corridor.Origin = bestTileA;
+        corridor.Origin = corridorOrigin;
         _corridors.Add(corridor);
     }
 
@@ -181,7 +183,7 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
 
     private List<Vector2Int> SmoothDungeon(List<Vector2Int> floor)
     {
-        bool[,] floorMatrix = ConvertVectorListToBoolArray(_dungeonFloorTiles, _dungeonSize.width, _dungeonSize.height,
+        bool[,] floorMatrix = ConvertVectorEnumerableToBoolArray(_dungeonFloorTiles, _dungeonSize.width, _dungeonSize.height,
             _dungeonSize.min);
         ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix, cellAutIterations, celAutThreshold);
         return ConvertBoolArrayToVectorList(floorMatrix, _dungeonSize.min);
@@ -191,9 +193,11 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
     {
         foreach (Room room in _rooms)
         {
-            bool[,] floorMatrix = ConvertVectorListToBoolArray(new List<Vector2Int>(room.Tiles), room.Bounds.width, room.Bounds.height,
+            if(!room.RoomParams.ApplySmoothing) continue;
+            bool[,] floorMatrix = ConvertVectorEnumerableToBoolArray(room.Tiles, room.Bounds.width, room.Bounds.height,
                 room.Bounds.min);
-            ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix, cellAutIterations, celAutThreshold);
+            ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix, 
+                room.RoomParams.CellAutIterations, room.RoomParams.CelAutThreshold);
             room.UpdateTiles(new HashSet<Vector2Int>(ConvertBoolArrayToVectorList(floorMatrix, room.Bounds.min)));
         }
     }
@@ -204,22 +208,25 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
         
         var entryRoom = new RoomNode(RoomType.Entrance);
         _dungeonGraph.AddVertex(entryRoom);
+        
 
-        var roomA = new RoomNode(RoomType.Enemy);
-        _dungeonGraph.AddVertex(roomA);
-        _dungeonGraph.AddEdge(new Edge<RoomNode>(entryRoom, roomA));
-        
-        var roomB = new RoomNode(RoomType.Enemy);
-        _dungeonGraph.AddVertex(roomB);
-        _dungeonGraph.AddEdge(new Edge<RoomNode>(roomA, roomB));
-        
-        var roomC = new RoomNode(RoomType.Enemy);
-        _dungeonGraph.AddVertex(roomC);
-        _dungeonGraph.AddEdge(new Edge<RoomNode>(roomB, roomC));
+        int dungeonLength = Random.Range(minDungeonLenght, maxDungeonLength + 1);
+
+        List<RoomType> generetableRooms = new List<RoomType>() { 
+            RoomType.Safe, RoomType.EnemyGiant,RoomType.EnemyLarge,RoomType.EnemyMid };
+        for (int i = 0; i < dungeonLength - 2; i++)
+        {
+            RoomType roomType = generetableRooms[Random.Range(0, generetableRooms.Count)];
+            RoomNode room = new RoomNode(roomType);
+            Edge<RoomNode> connection = new Edge<RoomNode>(_dungeonGraph.Vertices.Last(), room);
+            _dungeonGraph.AddVertex(room);
+            _dungeonGraph.AddEdge(connection);
+        }
 
         var bossRoom = new RoomNode(RoomType.Boss);
+        Edge<RoomNode> bossConnection = new Edge<RoomNode>(_dungeonGraph.Vertices.Last(), bossRoom);
         _dungeonGraph.AddVertex(bossRoom);
-        _dungeonGraph.AddEdge(new Edge<RoomNode>(roomC, bossRoom));
+        _dungeonGraph.AddEdge(bossConnection);
     }
 
     private void GenerateRooms()
@@ -233,8 +240,9 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
             RoomParamsSO param =  roomParams.Find((param) => param.Type == vertex.RoomType);
             HashSet<Vector2Int> roomTiles = GenerateRoomTiles(param);
             Room room = new Room(roomTiles, param, vertex);
-            currentRoomOrigin.x += (room.RoomParams.RoomMaxWidth + roomMargin * 2);
+            currentRoomOrigin.x += (room.RoomParams.RoomMaxWidth / 2 + roomMargin);
             room.Origin = new Vector2Int(currentRoomOrigin.x,currentRoomOrigin.y);
+            currentRoomOrigin.x += (room.RoomParams.RoomMaxWidth / 2 + roomMargin);
             _rooms.Add(room);
             
         }
@@ -275,7 +283,10 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
 
         foreach (var corridor in _corridors)
         {
-            _dungeonFloorTiles.AddRange(corridor.Tiles);
+            foreach (var tile in corridor.Tiles)
+            {
+                _dungeonFloorTiles.Add(tile + corridor.Origin);
+            }
         }
     }
 }

@@ -71,15 +71,6 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
     
     public static List<Vector2Int> ConvertBoolArrayToVectorList(bool[,] tileMap, Vector2Int origin = new Vector2Int())
     {
-        // for (int i = tileMap.GetLength(0) - 1; i >= 0; i--)
-        // {
-        //     string row = "";
-        //     for (int j = 0; j < tileMap.GetLength(1); j++)
-        //     {
-        //         row += tileMap[i,j]?"1":"0";
-        //     }
-        //     Debug.Log(row);
-        // }
         List<Vector2Int> tileList = new List<Vector2Int>();
         for (int i = 0; i < tileMap.GetLength(1); i++)
         {
@@ -96,7 +87,7 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
         return tileList;
     }
     
-    public static bool[,] ConvertVectorListToBoolArray(List<Vector2Int> tileList, 
+    public static bool[,] ConvertVectorEnumerableToBoolArray(IEnumerable<Vector2Int> tileList, 
         int width, int height, Vector2Int origin = new Vector2Int())
     {
         bool[,] tilemap = new bool[width+1,height+1];

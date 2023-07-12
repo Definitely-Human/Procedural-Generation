@@ -10,10 +10,19 @@ public class RoomParamsSO : ScriptableObject
     [SerializeField] private int roomMaxWidth;
     [SerializeField] private int roomMaxHeight;
 
-    [SerializeField] private int rWalkIterations;
+    [Header("Random Walk Parameters"), SerializeField] 
+    private int rWalkIterations;
     [SerializeField] private int rWalkLength;
     [SerializeField] private bool startRandomlyEachIteration;
+    
+    [Header("Smoothing Settings")] 
+    [SerializeField] private bool applySmoothing = true;
+    [SerializeField, Range(0,25)] private int cellAutIterations = 6;
+    [SerializeField, Range(3,5)] private int celAutThreshold = 4;
 
+    
+    public RoomType Type => roomType;
+    
     /// <summary>
     /// How many individual iterations of random walk should be.
     /// </summary>
@@ -40,5 +49,10 @@ public class RoomParamsSO : ScriptableObject
     /// </summary>
     public int RoomMaxHeight => roomMaxHeight;
 
-    public RoomType Type => roomType;
+
+    public bool ApplySmoothing => applySmoothing;
+
+    public int CellAutIterations => cellAutIterations;
+
+    public int CelAutThreshold => celAutThreshold;
 }

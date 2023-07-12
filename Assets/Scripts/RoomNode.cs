@@ -28,6 +28,9 @@ public class RoomNode
 public enum RoomType
 {
     Entrance,
-    Enemy,
+    Safe,
+    EnemyMid,
+    EnemyLarge,
+    EnemyGiant,
     Boss,
 }

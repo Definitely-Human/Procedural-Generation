@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2315f8b3440029d45abbde719a5802b5, type: 3}
-  m_Name: RParamsBig
+  m_Name: RoomEntrance
   m_EditorClassIdentifier: 
-  roomType: 2
-  roomMaxWidth: 80
-  roomMaxHeight: 80
-  rWalkIterations: 150
-  rWalkLength: 150
-  startRandomlyEachIteration: 1
+  roomType: 0
+  roomMaxWidth: 40
+  roomMaxHeight: 40
+  rWalkIterations: 40
+  rWalkLength: 40
+  startRandomlyEachIteration: 0

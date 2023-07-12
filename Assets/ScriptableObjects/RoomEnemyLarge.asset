@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2315f8b3440029d45abbde719a5802b5, type: 3}
-  m_Name: RParamsMid
+  m_Name: RoomEnemyLarge
   m_EditorClassIdentifier: 
-  roomType: 1
-  roomMaxWidth: 50
-  roomMaxHeight: 50
-  rWalkIterations: 100
-  rWalkLength: 86
+  roomType: 3
+  roomMaxWidth: 80
+  roomMaxHeight: 80
+  rWalkIterations: 150
+  rWalkLength: 150
   startRandomlyEachIteration: 1

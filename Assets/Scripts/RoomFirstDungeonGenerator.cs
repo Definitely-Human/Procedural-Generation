@@ -97,7 +97,7 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
 
     private HashSet<Vector2Int> SmoothPass(HashSet<Vector2Int> floor)
     {
-        bool[,] floorMatrix = ConvertVectorListToBoolArray(floor.ToList(), dungeonWidth, dungeonHeight);
+        bool[,] floorMatrix = ConvertVectorEnumerableToBoolArray(floor, dungeonWidth, dungeonHeight);
         ProceduralGenerationAlgorithms.CellularAutomaton(floorMatrix, cellAutIterations, celAutThreshold);
         return new HashSet<Vector2Int>(ConvertBoolArrayToVectorList(floorMatrix));
     }

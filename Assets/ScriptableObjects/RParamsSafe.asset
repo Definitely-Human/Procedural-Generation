@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2315f8b3440029d45abbde719a5802b5, type: 3}
-  m_Name: RParamsMedSmooth
+  m_Name: RParamsSafe
   m_EditorClassIdentifier: 
   roomType: 1
-  roomMaxWidth: 20
-  roomMaxHeight: 20
-  rWalkIterations: 100
-  rWalkLength: 20
-  startRandomlyEachIteration: 0
+  roomMaxWidth: 40
+  roomMaxHeight: 40
+  rWalkIterations: 30
+  rWalkLength: 50
+  startRandomlyEachIteration: 1
