@@ -88,10 +88,10 @@ public static class ProceduralGenerationAlgorithms
         return (x >= 0 && y >= 0) && (x < originalGrid.GetLength(1) && y < originalGrid.GetLength(0));
     }
 
-    public static List<RectInt> BinarySpacePartitioning(RectInt spaceToSplit, List<RoomParamsSO> roomParams, int roomMargin)
+    public static List<RectInt> BinarySpacePartitioning(RectInt spaceToSplit, List<BasicRoomParamsSO> roomParams, int roomMargin)
     {
         roomMargin *= 2;
-        List<RoomParamsSO> roomsLeft = new List<RoomParamsSO>(roomParams);
+        List<BasicRoomParamsSO> roomsLeft = new List<BasicRoomParamsSO>(roomParams);
         Queue<RectInt> roomQueue = new Queue<RectInt>();
         List<RectInt> roomsList = new List<RectInt>();
         roomQueue.Enqueue(spaceToSplit);

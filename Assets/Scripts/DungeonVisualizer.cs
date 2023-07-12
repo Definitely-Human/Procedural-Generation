@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 public class DungeonVisualizer : MonoBehaviour
 {
     [SerializeField]
-    private Tilemap floorTilemap, wallTilemap;
+    private Tilemap floorTilemap, wallTilemap, debugTilemap;
 
     [SerializeField] private TileSettingsSO tileSettings;
 
@@ -30,10 +30,20 @@ public class DungeonVisualizer : MonoBehaviour
         tilemap.SetTile(tilePosition, tile);
     }
 
+    public void PaintSingleColoredTile( Vector2Int position, Color color)
+    {
+        var tilePosition = debugTilemap.WorldToCell((Vector3Int)position);
+        debugTilemap.SetTile(tilePosition, tileSettings.FloorTile);
+        debugTilemap.SetTileFlags(tilePosition, TileFlags.None);
+        debugTilemap.SetColor(tilePosition, color);
+    }
+
     public void Clear()
     {
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
+        debugTilemap.ClearAllTiles();
+        
     }
 
     public void PaintSingleBasicWall(Vector2Int position, string binaryType)

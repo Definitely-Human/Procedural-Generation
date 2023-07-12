@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2315f8b3440029d45abbde719a5802b5, type: 3}
   m_Name: RParamsMedSmooth
   m_EditorClassIdentifier: 
+  roomType: 1
   roomMaxWidth: 20
-  roomMinWidth: 10
   roomMaxHeight: 20
-  roomMinHeight: 10
   rWalkIterations: 100
   rWalkLength: 20
   startRandomlyEachIteration: 0

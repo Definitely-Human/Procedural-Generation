@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public abstract class AbstractDungeonGenerator : MonoBehaviour
 {
@@ -68,7 +69,7 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
         return newCorridor;
     }
     
-    public static List<Vector2Int> ConvertBoolArrayToVectorList(bool[,] tileMap)
+    public static List<Vector2Int> ConvertBoolArrayToVectorList(bool[,] tileMap, Vector2Int origin = new Vector2Int())
     {
         // for (int i = tileMap.GetLength(0) - 1; i >= 0; i--)
         // {
@@ -80,14 +81,14 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
         //     Debug.Log(row);
         // }
         List<Vector2Int> tileList = new List<Vector2Int>();
-        for (int i = 0; i < tileMap.GetLength(0); i++)
+        for (int i = 0; i < tileMap.GetLength(1); i++)
         {
-            for (int j = 0; j < tileMap.GetLength(1); j++)
+            for (int j = 0; j < tileMap.GetLength(0); j++)
             {
-                if (tileMap[i, j])
+                if (tileMap[j, i])
                 {
                     // Debug.Log(i + " " + j);
-                    tileList.Add(new Vector2Int(i, j));
+                    tileList.Add(new Vector2Int(j, i) + origin);
                 }
             }
         }
@@ -95,20 +96,21 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
         return tileList;
     }
     
-    public static bool[,] ConvertVectorListToBoolArray(List<Vector2Int> tileList, int x, int y)
+    public static bool[,] ConvertVectorListToBoolArray(List<Vector2Int> tileList, 
+        int width, int height, Vector2Int origin = new Vector2Int())
     {
-        bool[,] tilemap = new bool[y,x];
+        bool[,] tilemap = new bool[width+1,height+1];
         
-        for (int i = 0; i < y; i++)
+        for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < x; j++)
+            for (int j = 0; j < height; j++)
             {
                 tilemap[i, j] = false;  
             }
         }
         foreach (var tile in tileList)
         {
-            tilemap[ tile.y, tile.x] = true;
+            tilemap[tile.x - origin.x, tile.y - origin.y] = true;
         }
         
         return tilemap;

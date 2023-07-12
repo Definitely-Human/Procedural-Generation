@@ -12,7 +12,7 @@ public static class WallGenerator
         CreateCornerWalls(dungeonVisualizer, cornerWallPositions, floorPositions);
     }
 
-    private static void CreateCornerWalls(DungeonVisualizer dungeonVisualizer, HashSet<Vector2Int> cornerWallPositions, HashSet<Vector2Int> floorPositions)
+    private static void CreateCornerWalls(DungeonVisualizer dungeonVisualizer, IEnumerable<Vector2Int> cornerWallPositions, HashSet<Vector2Int> floorPositions)
     {
         foreach (var position in cornerWallPositions)
         {
@@ -27,7 +27,7 @@ public static class WallGenerator
     }
 
     private static void CreateBasicWalls(DungeonVisualizer dungeonVisualizer, 
-        HashSet<Vector2Int> basicWallPositions,HashSet<Vector2Int> floorPositions )
+        IEnumerable<Vector2Int> basicWallPositions,HashSet<Vector2Int> floorPositions )
     {
         foreach (var position in basicWallPositions)
         {

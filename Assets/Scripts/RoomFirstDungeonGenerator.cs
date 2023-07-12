@@ -18,7 +18,7 @@ public class RoomFirstDungeonGenerator : AbstractDungeonGenerator
     [SerializeField]
     private bool differentSizedRooms;
 
-    [SerializeField] private List<RoomParamsSO> roomParams;
+    [SerializeField] private List<BasicRoomParamsSO> roomParams;
 
     [Space, Space]
     [SerializeField] protected RoomParamsSO randomWalkParams;

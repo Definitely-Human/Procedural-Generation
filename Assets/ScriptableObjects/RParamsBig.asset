@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2315f8b3440029d45abbde719a5802b5, type: 3}
   m_Name: RParamsBig
   m_EditorClassIdentifier: 
+  roomType: 2
   roomMaxWidth: 80
-  roomMinWidth: 50
   roomMaxHeight: 80
-  roomMinHeight: 50
   rWalkIterations: 150
   rWalkLength: 150
   startRandomlyEachIteration: 1
