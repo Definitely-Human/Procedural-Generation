@@ -23,6 +23,8 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
     [SerializeField] private bool applySmoothing;
     [SerializeField, Range(0,25)] private int cellAutIterations = 0;
     [SerializeField, Range(3,5)] private int celAutThreshold = 4;
+    
+    [SerializeField, Range(1,5)] private int corridorRadius = 1;
 
     protected override void RunProceduralGeneration()
     {
@@ -30,14 +32,15 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
         GenerateRooms();
 
         
-        if(smoothIndividualRooms)
+        if(smoothIndividualRooms && cellAutIterations > 0)
             SmoothRooms();
 
+        GenerateCorridors();
+        
         CollectDungeon();
         
         CalculateDungeonSize();
         
-        GenerateCorridors();
         
         if(applySmoothing && cellAutIterations > 0)
             _dungeonFloorTiles = SmoothDungeon(_dungeonFloorTiles);
@@ -60,11 +63,10 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
 
         foreach (Corridor corridor in _corridors)
         {
-            Debug.Log(corridor);
-            dungeonVisualizer.PaintSingleColoredTile(corridor.Tiles.ElementAt(0),Color.green);
-            dungeonVisualizer.PaintSingleColoredTile(corridor.Tiles.ElementAt(1),Color.red);
+            
         }
     }
+    
 
     private void CreateCorridor(Room roomA, Room roomB)
     {
@@ -88,9 +90,88 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
             }
         }
 
-        Corridor corridor = new Corridor(roomA, roomB, new HashSet<Vector2Int>() { bestTileA, bestTileB });
+        List<Vector2Int> corridorLine = GetLine(bestTileA, bestTileB);
+        HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
+
+        foreach (Vector2Int tile in corridorLine)
+        {
+            corridorTiles.UnionWith(DrawCircle(tile,corridorRadius));
+        }
+
+        Corridor corridor = new Corridor(roomA, roomB, corridorTiles);
         corridor.Origin = bestTileA;
         _corridors.Add(corridor);
+    }
+
+    private HashSet<Vector2Int> DrawCircle(Vector2Int center, int radius)
+    {
+        HashSet<Vector2Int> circle = new HashSet<Vector2Int>();
+
+        for (int x = -radius; x <= radius; x++)
+        {
+            for (int y = -radius; y <= radius; y++)
+            {
+                if (x * x + y * y < radius * radius)
+                {
+                    int drawX = center.x + x;
+                    int drawY = center.y + y;
+                    circle.Add(new Vector2Int(drawX, drawY));
+                }
+            }
+        }
+
+        return circle;
+    }
+
+    List<Vector2Int> GetLine(Vector2Int from, Vector2Int to) {
+        List<Vector2Int> line = new List<Vector2Int> ();
+
+        int x = from.x;
+        int y = from.y;
+
+        int dx = to.x - from.x;
+        int dy = to.y - from.y;
+
+        bool inverted = false;
+        int step = Math.Sign (dx);
+        int gradientStep = Math.Sign (dy);
+
+        int longest = Mathf.Abs (dx);
+        int shortest = Mathf.Abs (dy);
+
+        if (longest < shortest) {
+            inverted = true;
+            longest = Mathf.Abs(dy);
+            shortest = Mathf.Abs(dx);
+
+            step = Math.Sign (dy);
+            gradientStep = Math.Sign (dx);
+        }
+
+        int gradientAccumulation = longest / 2;
+        for (int i =0; i < longest; i ++) {
+            line.Add(new Vector2Int(x,y));
+
+            if (inverted) {
+                y += step;
+            }
+            else {
+                x += step;
+            }
+
+            gradientAccumulation += shortest;
+            if (gradientAccumulation >= longest) {
+                if (inverted) {
+                    x += gradientStep;
+                }
+                else {
+                    y += gradientStep;
+                }
+                gradientAccumulation -= longest;
+            }
+        }
+
+        return line;
     }
 
     private void CalculateDungeonSize()
@@ -190,6 +271,11 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
                 _dungeonFloorTiles.Add(tile + room.Origin);
             }
 
+        }
+
+        foreach (var corridor in _corridors)
+        {
+            _dungeonFloorTiles.AddRange(corridor.Tiles);
         }
     }
 }
