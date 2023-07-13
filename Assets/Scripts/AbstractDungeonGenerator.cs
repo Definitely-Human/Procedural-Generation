@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public abstract class AbstractDungeonGenerator : MonoBehaviour
 {
@@ -16,6 +18,12 @@ public abstract class AbstractDungeonGenerator : MonoBehaviour
     {
         if(isSetSeed)
             Random.InitState(seed);
+        else
+        {
+            seed = Random.Range(0,Int32.MaxValue);
+            Random.InitState(seed);
+        }
+
         dungeonVisualizer.Clear();
         RunProceduralGeneration();
     }
