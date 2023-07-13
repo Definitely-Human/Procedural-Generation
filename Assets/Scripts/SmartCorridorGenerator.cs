@@ -7,7 +7,8 @@ using UnityEngine;
 public class SmartCorridorGenerator : MonoBehaviour
 {
     public List<Corridor> Corridors { get; private set; }
-    [Header("Corridor Settings"),SerializeField, Range(1,5)] 
+    
+    [SerializeField, Range(1,5)] 
     private int corridorRadius = 1;
 
     public void GenerateCorridors(AbstractGraphGenerator graphGenerator, List<Room> rooms)
