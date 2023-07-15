@@ -7,13 +7,18 @@ using UnityEngine.Tilemaps;
 public class DungeonVisualizer : MonoBehaviour
 {
     [SerializeField]
-    private Tilemap floorTilemap, wallTilemap, debugTilemap;
+    private Tilemap floorTilemap, wallTilemap, backgroundTilemap, debugTilemap;
 
     [SerializeField] private TileSettingsSO tileSettings;
 
     public void PaintFloorTiles(IEnumerable<Vector2Int> floorPositions)
     {
         PaintTiles(floorPositions, floorTilemap, tileSettings.FloorTile);
+    }
+    
+    public void PaintBackgroundTiles(IEnumerable<Vector2Int> floorPositions)
+    {
+        PaintTiles(floorPositions, backgroundTilemap, tileSettings.BackgroundTile);
     }
 
     private void PaintTiles(IEnumerable<Vector2Int> positions, Tilemap tilemap, TileBase tile)
@@ -43,6 +48,7 @@ public class DungeonVisualizer : MonoBehaviour
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
         debugTilemap.ClearAllTiles();
+        backgroundTilemap.ClearAllTiles();
         
     }
 
@@ -50,26 +56,33 @@ public class DungeonVisualizer : MonoBehaviour
     {
         int typeAsInt = Convert.ToInt32(binaryType, 2);
         TileBase tile = null;
-        if (WallTypesHelper.wallTop.Contains(typeAsInt))
+        if (WallTypesHelper.WallTop.Contains(typeAsInt))
         {
             tile = tileSettings.WallTop;
         }
-        else if(WallTypesHelper.wallSideRight.Contains(typeAsInt))
+        else if(WallTypesHelper.WallSideRight.Contains(typeAsInt))
         {
             tile = tileSettings.WallSideRight;
         }
-        else if(WallTypesHelper.wallSideLeft.Contains(typeAsInt))
+        else if(WallTypesHelper.WallSideLeft.Contains(typeAsInt))
         {
             tile = tileSettings.WallSideLeft;
         }
-        else if(WallTypesHelper.wallBottom.Contains(typeAsInt))
+        else if(WallTypesHelper.WallBottom.Contains(typeAsInt))
         {
             tile = tileSettings.WallBottom;
         }
-        else if(WallTypesHelper.wallFull.Contains(typeAsInt))
+        else if(WallTypesHelper.WallFull.Contains(typeAsInt))
         {
             tile = tileSettings.WallFull;
         }
+        
+        else if (WallTypesHelper.WallSingle.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallSingle;
+        }
+        
+        
         if(tile != null)
             PaintSingleTile(wallTilemap,tile,position);
     }
@@ -79,37 +92,85 @@ public class DungeonVisualizer : MonoBehaviour
         int typeAsInt = Convert.ToInt32(binaryType, 2);
         TileBase tile = null;
 
-        if (WallTypesHelper.wallInnerCornerDownLeft.Contains(typeAsInt))
+        if (WallTypesHelper.WallInnerCornerDownLeft.Contains(typeAsInt))
         {
             tile = tileSettings.WallInnerCornerDownLeft;
         }
-        else if (WallTypesHelper.wallInnerCornerDownRight.Contains(typeAsInt))
+        else if (WallTypesHelper.WallInnerCornerDownRight.Contains(typeAsInt))
         {
             tile = tileSettings.WallInnerCornerDownRight;
         }
-        else if (WallTypesHelper.wallDiagonalCornerDownLeft.Contains(typeAsInt))
+        else if (WallTypesHelper.WallDiagonalCornerDownLeft.Contains(typeAsInt))
         {
             tile = tileSettings.WallDiagonalCornerDownLeft;
         }
-        else if (WallTypesHelper.wallDiagonalCornerDownRight.Contains(typeAsInt))
+        else if (WallTypesHelper.WallDiagonalCornerDownRight.Contains(typeAsInt))
         {
             tile = tileSettings.WallDiagonalCornerDownRight;
         }
-        else if (WallTypesHelper.wallDiagonalCornerUpRight.Contains(typeAsInt))
+        else if (WallTypesHelper.WallDiagonalCornerUpRight.Contains(typeAsInt))
         {
             tile = tileSettings.WallDiagonalCornerUpRight;
         }
-        else if (WallTypesHelper.wallDiagonalCornerUpLeft.Contains(typeAsInt))
+        else if (WallTypesHelper.WallDiagonalCornerUpLeft.Contains(typeAsInt))
         {
             tile = tileSettings.WallDiagonalCornerUpLeft;
         }
-        else if (WallTypesHelper.wallFullEightDirections.Contains(typeAsInt))
+        else if (WallTypesHelper.WallFullEightDirections.Contains(typeAsInt))
         {
             tile = tileSettings.WallFull;
         }
-        else if (WallTypesHelper.wallBottomEightDirections.Contains(typeAsInt))
+        else if (WallTypesHelper.WallBottomEightDirections.Contains(typeAsInt))
         {
             tile = tileSettings.WallBottom;
+        }
+        else if (WallTypesHelper.WallLedgeLeftEightDirections.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallLedgeLeft;
+        }
+        else if (WallTypesHelper.WallLedgeRightEightDirections.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallLedgeRight;
+        }
+        else if (WallTypesHelper.WallLedgeBottomEightDirections.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallLedgeBottom;
+        }
+        else if (WallTypesHelper.WallLedgeTopEightDirections.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallLedgeTop;
+        }
+        else if (WallTypesHelper.WallInnerCornerUpRight.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallInnerCornerUpRight;
+        }
+        else if (WallTypesHelper.WallInnerCornerUpLeft.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallInnerCornerUpLeft;
+        }
+        else if (WallTypesHelper.WallTBottom.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallTBottom;
+        }
+        else if (WallTypesHelper.WallTRight.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallTRight;
+        }
+        else if (WallTypesHelper.WallTLeft.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallTLeft;
+        }
+        else if (WallTypesHelper.WallTTop.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallTTop;
+        }
+        else if (WallTypesHelper.WallHorizontal.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallHorizontal;
+        }
+        else if (WallTypesHelper.WallVertical.Contains(typeAsInt))
+        {
+            tile = tileSettings.WallVertical;
         }
         
         if(tile!= null)

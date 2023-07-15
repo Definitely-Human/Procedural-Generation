@@ -21,6 +21,9 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
     [SerializeField, Range(0,25)] private int cellAutIterations = 0;
     [SerializeField, Range(3,5)] private int celAutThreshold = 4;
 
+    [Header("Background Settings")] [SerializeField]
+    private int backgroundMargin = 50;
+
     protected override void RunProceduralGeneration()
     {
         CreateAbstraction();
@@ -40,6 +43,23 @@ public class SmartDungeonGenerator : AbstractDungeonGenerator
         
         dungeonVisualizer.PaintFloorTiles(_dungeonFloorTiles);
         WallGenerator.CreateWalls(new HashSet<Vector2Int>(_dungeonFloorTiles), dungeonVisualizer);
+
+        // CalculateAndPaintBackground();
+    }
+
+    private void CalculateAndPaintBackground()
+    {
+        List<Vector2Int> backgroundTiles = new List<Vector2Int>();
+        for (int i = _dungeonSize.min.x - backgroundMargin; i < _dungeonSize.max.x + backgroundMargin; i++)
+        {
+            for (int j = _dungeonSize.min.y - backgroundMargin; j < _dungeonSize.max.y + backgroundMargin; j++)
+            {
+                var backgroundTile = new Vector2Int(i, j);
+                if(_dungeonFloorTiles.Contains(backgroundTile)) continue;
+                backgroundTiles.Add(backgroundTile);
+            }
+        }
+        dungeonVisualizer.PaintBackgroundTiles(backgroundTiles);
     }
 
     private void GenerateCorridors()
