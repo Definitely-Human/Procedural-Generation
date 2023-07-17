@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -34,12 +36,49 @@ namespace WaveFunctionCollapse
 
         private void VerifyInputTiles()
         {
-            throw new System.NotImplementedException();
+            if (topRightTile == null || bottomLeftTile == null)
+                throw new Exception("WFC: Input tilemap is empty!");
+            int minX = bottomLeftTile.Value.x;
+            int maxX = topRightTile.Value.x;
+            int minY = bottomLeftTile.Value.y;
+            int maxY = topRightTile.Value.y;
+
+            _width = Math.Abs(maxX - minX) + 1;
+            _height = Math.Abs(maxY - minY) + 1;
+
+            int tileCount = _width * _height;
+            if (_queueOfTiles.Count != tileCount)
+            {
+                throw new Exception("WFC: Tilemaps has empty fields!");
+            }
+
+            if (_queueOfTiles.Any(tile => tile.X > maxX || tile.X < minX || tile.Y > maxY || tile.Y < minY))
+            {
+                throw new Exception("WFC: Input tilemap should be a filled rectangle!");
+            }
         }
 
         private void ExtractNotEmptyTiles()
         {
-            throw new System.NotImplementedException();
+            for (int row = 0; row< InputTileMapBounds.size.y; row++)
+            {
+                for (int col = 0; col < InputTileMapBounds.size.x; col++)
+                {
+                    int index = col + (row * InputTileMapBounds.size.x);
+
+                    TileBase tile = inputTilemapTilesArray[index];
+                    if (bottomLeftTile == null && tile != null)
+                    {
+                        bottomLeftTile = new Vector2Int(col, row);
+                    }
+
+                    if (tile != null)
+                    {
+                        _queueOfTiles.Enqueue(new TileContainer(tile,col,row));
+                        topRightTile = new Vector2Int(col, row);
+                    }
+                }
+            }
         }
     }
 }

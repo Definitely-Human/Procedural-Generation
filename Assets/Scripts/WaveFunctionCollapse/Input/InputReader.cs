@@ -41,9 +41,18 @@ namespace WaveFunctionCollapse
             return CreateTileBaseGrid(inputImageParameters);
         }
 
-        private TileBase[,] CreateTileBaseGrid(InputImageParameters inputImageParameters)
+        private TileBase[,] CreateTileBaseGrid(InputImageParameters imageParameters)
         {
-            throw new System.NotImplementedException();
+            TileBase[,] gridOfInputTiles = new TileBase[imageParameters.Height,imageParameters.Width];
+            for (int row = 0; row < imageParameters.Height; row++)
+            {
+                for (int col = 0; col < imageParameters.Width; col++)
+                {
+                    gridOfInputTiles[row, col] = imageParameters.QueueOfTiles.Dequeue().Tile; 
+                }
+            }
+
+            return gridOfInputTiles;
         }
     }
 }
