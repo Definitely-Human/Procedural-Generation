@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace WaveFunctionCollapse
 {
@@ -90,6 +91,13 @@ namespace WaveFunctionCollapse
             }
 
             return pattern;
+        }
+
+        public Vector2Int GetGridSize()
+        {
+            if (_grid == null)
+                return Vector2Int.zero;
+            return new Vector2Int(_grid.GetLength(1), _grid.GetLength(0));
         }
     }
 }
